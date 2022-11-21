@@ -40,7 +40,7 @@ export default {
         const { id } = this.$route.params
         if (id) {
             toyService.getById(id).then((toy) => {
-                this.toyToEdit = JSON.parse(JSON.stringify(toy))
+                this.toyToEdit = (toy)
             })
         } else this.toyToEdit = toyService.getEmptyToy()
     },

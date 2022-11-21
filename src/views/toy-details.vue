@@ -1,17 +1,24 @@
 <template>
     <section v-if="toy" class="toy-details">
-        <button @click="goBack">Go back</button>
-        <h1>Toy Details</h1>
-        <small>ID: {{ toy._id }}</small>
-        <p>Name: {{ toy.name }}</p>
-        <p>Price: {{ toy.price }}</p>
-        <p>Labels: {{ toy.labels }}</p>
-        <p>Created: {{ getDate }}</p>
+        <section class="toy-info">
+            <button @click="goBack">Go back</button>
+            <h1>Toy Details</h1>
+            <small>ID: {{ toy._id }}</small>
+            <p>Name: {{ toy.name }}</p>
+            <p>Price: {{ toy.price }}</p>
+            <p>Labels: {{ toy.labels }}</p>
+            <p>Created: {{ getDate }}</p>
+        </section>
+        <section class="toy-reviews">
+            <h2>Toy reviews</h2>
+            <review-list :reviews="this.toy.reviews" />
+        </section>
     </section>
 </template>
 
 <script>
 import toyService from '../services/toy.service';
+import reviewList from '../components/review-list.vue';
 
 export default {
     name: 'toy-details',
@@ -36,6 +43,9 @@ export default {
         goBack() {
             this.$router.push('/toy')
         }
+    },
+    components: {
+        reviewList
     }
 }
 </script>

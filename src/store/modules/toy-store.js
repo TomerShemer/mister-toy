@@ -5,8 +5,12 @@ const PAGE_SIZE = 3
 export default {
     state: {
         toys: null,
-        filterBy: { status: 'All', txt: '', page: 0 },
-        sortBy: null,
+        // filterBy: {
+        //     txt: '',
+        //     inStock: false,
+        //     labels: [],
+        //     sort: '',
+        // },
     },
     getters: {
         toys(state) {
@@ -35,6 +39,9 @@ export default {
             // return filteredToys?.slice(startIdx, endIdx).sort((t1, t2) => (t1[sortBy] > t2[sortBy] ? 1 * asc : -1 * asc))
             return filteredToys?.slice(startIdx, endIdx)
         },
+        getLabels() {
+            return toyService.getLabels()
+        }
     },
     mutations: {
         setToys(state, toys) {
@@ -52,13 +59,13 @@ export default {
             console.log('Adding!!')
             toys.push(toy)
         },
-        setFilterBy(state, { filterBy }) {
-            state.filterBy = { ...state.filterBy, ...filterBy }
-            console.log(state.filterBy)
-        },
-        setSortBy(state, { sortBy }) {
-            state.sortBy = sortBy
-        },
+        // setFilterBy(state, { filterBy }) {
+        //     state.filterBy = { ...state.filterBy, ...filterBy }
+        //     console.log(state.filterBy)
+        // },
+        // setSortBy(state, { sortBy }) {
+        //     state.sortBy = sortBy
+        // },
         setPage(state, { diff }) {
             const toyLength = state.toys?.length
             let maxPage = toyLength / PAGE_SIZE

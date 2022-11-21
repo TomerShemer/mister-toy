@@ -12,32 +12,38 @@ import { httpService } from './http.service.js'
 //     "inStock": true
 // }
 
-// const labels = [
-//     "On wheels",
-//     "Box game",
-//     "Art",
-//     "Baby",
-//     "Doll",
-//     "Puzzle",
-//     "Outdoor",
-//     "Battery Powered"
-// ]
+const labels = [
+    'On wheels',
+    'Box game',
+    'Art',
+    'Baby',
+    'Doll',
+    'Puzzle',
+    'Outdoor',
+    'Battery Powered'
+]
 
 const reviews = [
     {
+        _id: 'aAaAa',
+        username: 'Matilda',
         txt: 'Great toy!',
         createdAt: 1631531801011,
         rate: 4
     },
     {
-        txt: 'Great toy!',
+        _id: 'bBbBb',
+        username: 'John',
+        txt: 'meh',
         createdAt: 1631531801011,
-        rate: 4
+        rate: 2
     },
     {
-        txt: 'Great toy!',
+        _id: 'cCcCc',
+        username: 'Ben',
+        txt: 'A lot of fun',
         createdAt: 1631531801011,
-        rate: 4
+        rate: 3
     },
 ]
 
@@ -83,6 +89,7 @@ function getById(toyId) {
         .then(toy => {
             const toyCopy = JSON.parse(JSON.stringify(toy))
             toyCopy.reviews = reviews
+            return toyCopy
         })
     // return axios.get(TOY_URL + toyId).then(res => res.data)
 }
@@ -92,7 +99,8 @@ export default {
     getById,
     save,
     remove,
-    getEmptyToy
+    getEmptyToy,
+    getLabels
 }
 
 function getEmptyToy() {
@@ -106,22 +114,24 @@ function getEmptyToy() {
     }
 }
 
-
+function getLabels() {
+    return labels
+}
 
 
 function _createToys() {
     return [
-        _createToy('Talking Doll', 123, ['Doll', 'Battery Powered', 'Baby'], 1631031801011, true),
-        _createToy('Dinosaur', 50, ['Doll', 'Battery Powered'], 1631031801011, true),
-        _createToy('Talisman', 100, ['Box game'], 1631031801011, false),
-        _createToy('1000pc Sunset Puzzle', 149, ['Puzzle', 'Art'], 1631031801011, true),
-        _createToy('Playdough', 15, ['Outdoor', 'Art', 'Baby'], 1631031801011, true),
-        _createToy('G.I. Joe', 25, ['Doll', 'Battery Powered'], 1631031801011, false),
-        _createToy('Racing Car', 35, ['On wheels', 'Battery Powered'], 1631031801011, true),
+        _createToy('Talking Doll', 123, ['Doll', 'Battery Powered', 'Baby'], 1631034561011, true),
+        _createToy('Dinosaur', 50, ['Doll', 'Battery Powered'], 1631231801011, true),
+        _createToy('Talisman', 100, ['Box game'], 1631031476011, false),
+        _createToy('1000pc Sunset Puzzle', 149, ['Puzzle', 'Art'], 1631031798611, true),
+        _createToy('Playdough', 15, ['Outdoor', 'Art', 'Baby'], 1631531801011, true),
+        _createToy('G.I. Joe', 25, ['Doll', 'Battery Powered'], 1631036801011, false),
+        _createToy('Racing Car', 35, ['On wheels', 'Battery Powered'], 1631071801011, true),
     ]
 }
 
-function _createToy({ name, price, labels, createdAt, inStock }) {
+function _createToy(name, price, labels, createdAt, inStock) {
     return {
         _id: utilService.makeId(),
         name,

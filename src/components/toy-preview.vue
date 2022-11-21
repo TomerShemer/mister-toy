@@ -4,7 +4,8 @@
             <template #header>
                 <p><span>Name:</span> {{ toy.name }}</p>
                 <p><span>Price:</span> {{ toy.price }}</p>
-                <p><span>Labels:</span> {{ toy.labels }}</p>
+                <p><span>Labels:</span> {{ getLabels }}</p>
+                <!-- <p><span>Labels:</span> {{ toy.labels }}</p> -->
                 <p><span>Created:</span> {{ getDate }}</p>
                 <p><span>In Stock:</span> {{ toy.inStock }}</p>
             </template>
@@ -37,6 +38,9 @@ export default {
         getDate() {
             const d = new Date(this.toy.createdAt)
             return d.toLocaleDateString('he-IL')
+        },
+        getLabels() {
+            return this.toy.labels.map(label => label).join(', ')
         }
     },
     methods: {
