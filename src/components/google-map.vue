@@ -1,5 +1,5 @@
 <template>
-    <GoogleMap api-key="AIzaSyA1LK7-L0R0NoXRPeMTs5E0YVFSGKa0kss" style="width: 100%; height: 500px" :center="center"
+    <GoogleMap :api-key="process.env['secret-special-key']" style="width: 100%; height: 500px" :center="center"
         :zoom="10">
         <Marker @click="center = m.position" v-for="m in markers" :options="m">
             <InfoWindow>
