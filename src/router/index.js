@@ -3,6 +3,8 @@ import homePage from '../views/home-page.vue'
 import toyApp from '../views/toy-app.vue'
 import toyEdit from '../views/toy-edit.vue'
 import toyDetails from '../views/toy-details.vue'
+import dashboard from '../views/dashboard.vue'
+import aboutPage from '../views/about-page.vue'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -27,14 +29,16 @@ const router = createRouter({
       name: 'toy-details',
       component: toyDetails
     },
-    // {
-    // path: '/about',
-    // name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (About.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    // component: () => import('../views/AboutView.vue')
-    // }
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: dashboard
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: aboutPage
+    },
   ]
 })
 

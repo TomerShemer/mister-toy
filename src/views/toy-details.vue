@@ -6,7 +6,7 @@
             <small>ID: {{ toy._id }}</small>
             <p>Name: {{ toy.name }}</p>
             <p>Price: {{ toy.price }}</p>
-            <p>Labels: {{ toy.labels }}</p>
+            <p>Labels: {{ getLabels }}</p>
             <p>Created: {{ getDate }}</p>
         </section>
         <section class="toy-reviews">
@@ -31,12 +31,16 @@ export default {
         const { id } = this.$route.params
         toyService.getById(id).then(toy => {
             this.toy = toy
+            console.log(toy);
         })
     },
     computed: {
         getDate() {
             const d = new Date(this.toy.createdAt)
             return d.toLocaleDateString('he-IL')
+        },
+        getLabels() {
+            return this.toy.labels.map(label => label).join(', ')
         }
     },
     methods: {

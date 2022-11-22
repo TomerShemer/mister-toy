@@ -5,80 +5,69 @@ const PAGE_SIZE = 3
 export default {
     state: {
         toys: null,
-        // filterBy: {
-        //     txt: '',
-        //     inStock: false,
-        //     labels: [],
-        //     sort: '',
-        // },
+        filterBy: {
+            txt: '',
+            inStock: false,
+            labels: [],
+            sort: '',
+        },
+        labels: toyService.getLabels()
     },
     getters: {
         toys(state) {
             return state.toys
         },
-        toysForDisplay(state) {
-            if (!state.toys) return
-            const asc = state.sortBy?.isAsc ? -1 : 1
-            let filteredToys
-            // if (!state.filterBy.txt && state.filterBy.status === 'All') filteredToys = JSON.parse(JSON.stringify(state.toys))
-            // else {
-            //     if (state.filterBy.status === 'Active') {
-            //         filteredToys = state.toys.filter(toy => toy.isActive)
-            //     } else if (state.filterBy.status === 'Done') {
-            //         filteredToys = state.toys.filter(toy => !toy.isActive)
-            //     } else {
-            //         filteredToys = state.toys
-            //     }
-            //     filteredToys = filteredToys.filter(toy => new RegExp(state.filterBy.txt, 'i').test(toy.txt))
-            // }
-            // PAGING
-            let startIdx = state.filterBy.page * PAGE_SIZE
-            let endIdx = startIdx + PAGE_SIZE
-
-            const sortBy = state.sortBy?.val
-            // return filteredToys?.slice(startIdx, endIdx).sort((t1, t2) => (t1[sortBy] > t2[sortBy] ? 1 * asc : -1 * asc))
-            return filteredToys?.slice(startIdx, endIdx)
+        getLabels(state) {
+            return state.labels
         },
-        getLabels() {
-            return toyService.getLabels()
+        getPricePerLabel(state) {
+            if (!state.toys) return
+            const avg = toyService.getLabels().map(label => {
+                const total = state.toys.reduce((acc, toy) => {
+                    if (toy.labels.includes(label)) {
+                        acc.sum += toy.price
+                        acc.toys++
+                    }
+                    return acc
+                }, { toys: 0, sum: 0 })
+                return (total.sum / total.toys).toFixed(2)
+            })
+            return avg
+        },
+        getToysInStockByLabel(state) {
+            if (!state.toys) return
+            const toysInStock = toyService.getLabels().map(label => {
+                const total = state.toys.reduce((acc, toy) => {
+                    if (toy.labels.includes(label)) {
+                        acc.toys++
+                        if (toy.inStock) acc.inStock++
+                    }
+                    return acc
+                }, { toys: 0, inStock: 0 })
+                return (total.inStock / total.toys * 100).toFixed()
+            })
+            return toysInStock
+        },
+        getLabelsSelect(state) {
+            return state.labels.map(label => {
+                return { value: label, label }
+            })
         }
     },
     mutations: {
-        setToys(state, toys) {
+        setToys(state, { toys }) {
             state.toys = toys
         },
-        updateToy({ toys }, { toy }) {
-            const idx = toys.findIndex(_toy => _toy._id === toy._id)
-            if (idx === -1) {
-                console.log("Can't update toy " + toy._id)
-                return
-            }
-            toys.splice(idx, 1, toy)
+        setFilter(state, { filterBy }) {
+            state.filterBy = filterBy
         },
-        addToy({ toys }, { toy }) {
-            console.log('Adding!!')
-            toys.push(toy)
-        },
-        // setFilterBy(state, { filterBy }) {
-        //     state.filterBy = { ...state.filterBy, ...filterBy }
-        //     console.log(state.filterBy)
-        // },
-        // setSortBy(state, { sortBy }) {
-        //     state.sortBy = sortBy
-        // },
-        setPage(state, { diff }) {
-            const toyLength = state.toys?.length
-            let maxPage = toyLength / PAGE_SIZE
-            if (Number.isInteger(toyLength / PAGE_SIZE)) maxPage--
-            else maxPage = Math.floor(maxPage)
-
-            let page = state.filterBy.page + diff
-            if (page < 0) state.filterBy.page = maxPage
-            else if (page > maxPage) state.filterBy.page = 0
-            else state.filterBy.page = page
+        saveToy({ toys }, { toy }) {
+            const idx = toys.findIndex(currToy => currToy._id === toy._id)
+            if (idx !== -1) toys.splice(idx, 1, toy)
+            else toys.unshift(toy)
         },
         removeToy({ toys }, { toyId }) {
-            const idx = toys.findIndex(toy => toy._id === toyId)
+            const idx = toys.findIndex((toy) => toy._id === toyId)
             if (idx === -1) {
                 console.log("Can't remove toy " + toyId)
                 return
@@ -87,34 +76,42 @@ export default {
         },
     },
     actions: {
-        loadToys({ commit }) {
-            toyService.query().then(toys => {
-                console.log("🚀 ~ file: toy-store.js ~ line 84 ~ toyService.query ~ toys", toys)
-                commit('setToys', toys)
-
+        loadToys({ commit, state }) {
+            toyService.query(state.filterBy).then((toys) => {
+                commit({ type: 'setToys', toys })
             })
         },
         saveToy({ commit, dispatch }, { toy }) {
-            debugger
             console.log('Saving')
-            const isEdit = toy._id
-            return toyService.save(toy).then(toy => {
-                const type = isEdit ? 'updateToy' : 'addToy'
-                // if (isEdit) commit({ type: 'updateToy', toy })
-                // else commit({ type: 'addToy', toy })
-                commit({ type, toy })
+            // const isEdit = toy._id
+            // return toyService.save(toy).then(toy => {
+            //     const type = isEdit ? 'updateToy' : 'addToy'
+            //     // if (isEdit) commit({ type: 'updateToy', toy })
+            //     // else commit({ type: 'addToy', toy })
+            //     commit({ type, toy })
+            // })
+            toyService.save(toy).then((toy) => {
+                commit({ type: 'saveToy', toy })
             })
         },
         removeToy({ commit, dispatch }, { toyId }) {
             console.log('Store remove toyId', toyId)
-            return toyService.remove(toyId).then(removedToy => {
+            // return toyService.remove(toyId).then(removedToy => {
+            //     commit({ type: 'removeToy', toyId })
+            //     // dispatch({ type: 'setUserActivities', txt: 'Toy was removed', toy: removedToy })
+            // })
+            toyService.remove(toyId).then(() => {
                 commit({ type: 'removeToy', toyId })
-                // dispatch({ type: 'setUserActivities', txt: 'Toy was removed', toy: removedToy })
             })
         },
         getToyById(context, { toyId }) {
-            console.log(context)
+            // console.log(context)
             return toyService.getById(toyId)
+        },
+        setFilter(context, { filterBy }) {
+            // console.log(filterBy)
+            context.commit({ type: 'setFilter', filterBy })
+            context.dispatch({ type: 'loadToys' })
         },
     },
 }

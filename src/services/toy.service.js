@@ -3,15 +3,6 @@ import { storageService } from './async-storage.service.js'
 import { httpService } from './http.service.js'
 
 
-// const toy = {
-//     "_id": "t101",
-//     "name": "Talking Doll",
-//     "price": 123,
-//     "labels": ["Doll", "Battery Powered", "Baby"],
-//     "createdAt": 1631031801011,
-//     "inStock": true
-// }
-
 const labels = [
     'On wheels',
     'Box game',
@@ -23,75 +14,97 @@ const labels = [
     'Battery Powered'
 ]
 
-const reviews = [
-    {
-        _id: 'aAaAa',
-        username: 'Matilda',
-        txt: 'Great toy!',
-        createdAt: 1631531801011,
-        rate: 4
-    },
-    {
-        _id: 'bBbBb',
-        username: 'John',
-        txt: 'meh',
-        createdAt: 1631531801011,
-        rate: 2
-    },
-    {
-        _id: 'cCcCc',
-        username: 'Ben',
-        txt: 'A lot of fun',
-        createdAt: 1631531801011,
-        rate: 3
-    },
-]
+// const reviews = [
+//     {
+//         _id: 'aAaAa',
+//         username: 'Matilda',
+//         txt: 'Great toy!',
+//         createdAt: 1631531801011,
+//         rate: 4
+//     },
+//     {
+//         _id: 'bBbBb',
+//         username: 'John',
+//         txt: 'meh',
+//         createdAt: 1631531801011,
+//         rate: 2
+//     },
+//     {
+//         _id: 'cCcCc',
+//         username: 'Ben',
+//         txt: 'A lot of fun',
+//         createdAt: 1631531801011,
+//         rate: 3
+//     },
+// ]
 
 const TOY_KEY = 'toysDB'
-const TOY_URL = '/api/toy/'
+const TOY_URL = 'toy/'
 
-function query() {
-    return storageService.queryWithDelay(TOY_KEY).then(toys => {
-        // console.log('toys:', toys)
-        if (!toys || !toys.length) {
-            toys = _createToys()
-            storageService.postMany(TOY_KEY, toys)
-        }
-        return toys
-    })
-    // return httpService.get(TOY_URL).then(res => res.data)
-}
+// function query() {
+//     return storageService.queryWithDelay(TOY_KEY).then(toys => {
+//         // console.log('toys:', toys)
+//         if (!toys || !toys.length) {
+//             toys = _createToys()
+//             storageService.postMany(TOY_KEY, toys)
+//         }
+//         return toys
+//     })
+//     // return httpService.get(TOY_URL).then(res => res.data)
+// }
 
-function save(toy) {
-    return toy._id ? _update(toy) : _add(toy)
-}
+// function save(toy) {
+//     return toy._id ? _update(toy) : _add(toy)
+// }
 
-function _add(addedToy) {
-    debugger
-    const newToy = _createToy({ ...addedToy })
-    return storageService.post(TOY_KEY, newToy)
-    // return axios.post(TOY_URL, addedToy).then(res => res.data)
-}
+// function _add(addedToy) {
+//     debugger
+//     const newToy = _createToy({ ...addedToy })
+//     return storageService.post(TOY_KEY, newToy)
+//     // return axios.post(TOY_URL, addedToy).then(res => res.data)
+// }
 
-function _update(updatedToy) {
-    // updatedToy.modifiedAt = Date.now()
-    return storageService.put(TOY_KEY, updatedToy)
-    // return axios.put(TOY_URL + updatedToy._id, updatedToy).then(res => res.data)
-}
+// function _update(updatedToy) {
+//     // updatedToy.modifiedAt = Date.now()
+//     return storageService.put(TOY_KEY, updatedToy)
+//     // return axios.put(TOY_URL + updatedToy._id, updatedToy).then(res => res.data)
+// }
 
-function remove(toyId) {
-    return storageService.remove(TOY_KEY, toyId)
-    // return axios.delete(TOY_URL + toyId).then(res => res.data)
+// function remove(toyId) {
+//     return storageService.remove(TOY_KEY, toyId)
+//     // return axios.delete(TOY_URL + toyId).then(res => res.data)
+// }
+
+// function getById(toyId) {
+//     return storageService.get(TOY_KEY, toyId)
+//         .then(toy => {
+//             const toyCopy = JSON.parse(JSON.stringify(toy))
+//             toyCopy.reviews = reviews
+//             return toyCopy
+//         })
+//     // return axios.get(TOY_URL + toyId).then(res => res.data)
+// }
+
+function query(filterBy = _getEmptyFilterBy()) {
+    return httpService.get(TOY_URL, filterBy)
+    // return storageService.query(KEY)
 }
 
 function getById(toyId) {
-    return storageService.get(TOY_KEY, toyId)
-        .then(toy => {
-            const toyCopy = JSON.parse(JSON.stringify(toy))
-            toyCopy.reviews = reviews
-            return toyCopy
-        })
-    // return axios.get(TOY_URL + toyId).then(res => res.data)
+    return httpService.get(TOY_URL + toyId)
+    // return storageService.get(KEY, toyId)
+}
+
+function remove(toyId) {
+    return httpService.delete(TOY_URL + toyId)
+    // return storageService.remove(KEY, toyId)
+}
+
+function save(toy) {
+    if (toy._id) return httpService.put(TOY_URL + toy._id, toy)
+    return httpService.post(TOY_URL, toy)
+    // if (toy._id) return storageService.put(KEY, toy)
+    // return storageService.post(KEY, toy)
 }
 
 export default {
@@ -110,7 +123,16 @@ function getEmptyToy() {
         price: 0,
         labels: [],
         createdAt: null,
-        inStock: true
+        inStock: false
+    }
+}
+
+function _getEmptyFilterBy() {
+    return {
+        txt: '',
+        inStock: false,
+        labels: [],
+        sort: '',
     }
 }
 

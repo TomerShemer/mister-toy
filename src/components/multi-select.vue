@@ -1,79 +1,36 @@
-<!-- <template>
-    <CMultiSelect :options="options" selectionType="tags" />
+<template>
+    <section v-if="labels" class="multi-select">
+        <el-select @change="updateLabels" v-model="labels" multiple collapse-tags placeholder="Select"
+            style="width: 240px">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+    </section>
 </template>
+
 <script>
-import '@coreui/coreui/dist/css/coreui.min.css'
-import { CAlert } from '@coreui/vue'
-
+import { ref } from 'vue'
 export default {
-    data: () => {
-        return {
-            options: [
-                {
-                    value: 0,
-                    text: 'Angular',
-                    selected: true
-                },
-                {
-                    value: 1,
-                    text: 'Bootstrap',
-                    selected: true,
-                    disabled: true,
-                },
-                {
-                    value: 2,
-                    text: 'React.js',
-                },
-                {
-                    value: 3,
-                    text: 'Vue.js',
-                },
-                {
-                    label: 'backend',
-                    options: [
-                        {
-                            value: 4,
-                            text: 'Django',
-                        },
-                        {
-                            value: 5,
-                            text: 'Laravel',
-                            selected: true,
-                        },
-                        {
-                            value: 6,
-                            text: 'Node.js',
-                        },
-                    ],
-                },
-            ],
-        }
-    },
-}
-</script> -->
-
-<!-- ////////////////////////////////// -->
-
-<!-- <template>
-    <div>
-        <multiselect v-model="selected" :options="options">
-        </multiselect>
-    </div>
-</template>
-     
-<script>
-import Multiselect from 'vue-multiselect'
-export default {
-    components: { Multiselect },
     data() {
         return {
-            selected: null,
-            options: ['list', 'of', 'options']
+            labels: null,
+
+            options: this.$store.getters.getLabelsSelect
+        }
+    },
+    props: {
+        toyToEdit: {
+            type: Object,
+            required: true
+        }
+    },
+    mounted() {
+        this.labels = ref([...this.toyToEdit.labels])
+    },
+    methods: {
+        updateLabels() {
+            // console.log(this.labels);
+            this.$emit('updateLabel', this.labels)
         }
     }
 }
 </script>
-     
-<style src="vue-multiselect/dist/vue-multiselect.min.css">
-
-</style> -->

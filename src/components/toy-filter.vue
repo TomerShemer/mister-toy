@@ -36,7 +36,9 @@ export default {
     },
     methods: {
         setFilter() {
-            this.$emit('setFilter', this.filterBy)
+            const filterByCopy = JSON.parse(JSON.stringify(this.filterBy))
+
+            this.$emit('setFilter', filterByCopy)
         }
     }
 }

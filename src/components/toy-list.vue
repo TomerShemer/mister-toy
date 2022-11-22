@@ -24,6 +24,9 @@ export default {
         removeToy(toyId) {
             this.$emit('removeToy', toyId)
         }
+    },
+    created() {
+        console.log(this.toys);
     }
 }
 </script>

@@ -20,7 +20,7 @@
             </label>
             <label for="labels">
                 Labels:
-
+                <multi-select @updateLabel="updateLabel" :toyToEdit="toyToEdit" />
             </label>
             <button>Save</button>
         </form>
@@ -29,6 +29,7 @@
 
 <script>
 import toyService from '../services/toy.service'
+import multiSelect from '../components/multi-select.vue'
 export default {
     name: 'toy-edit',
     data() {
@@ -53,9 +54,14 @@ export default {
         },
         goBack() {
             this.$router.push('/toy')
+        },
+        updateLabel(labels) {
+            this.toyToEdit.labels = labels
         }
     },
     computed: {},
-    components: {}
+    components: {
+        multiSelect
+    }
 }
 </script>
